@@ -1,0 +1,83 @@
+// Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model User {
+  id          String      @id @default(cuid())
+  clerkId     String      @unique
+  username    String?
+  imageUrl    String?
+  createdAt   DateTime    @default(now())
+
+  posts       Post[]
+  comments    Comment[]
+  votes       Vote[]
+  communities Community[]
+}
+
+model Community {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+
+  creatorId   String
+  creator     User      @relation(fields: [creatorId], references: [id])
+
+  posts       Post[]
+}
+
+model Post {
+  id           String      @id @default(cuid())
+  title        String
+  content      String?
+  imageUrl     String?
+  createdAt    DateTime    @default(now())
+
+  authorId     String
+  author       User        @relation(fields: [authorId], references: [id])
+
+  communityId  String
+  community    Community   @relation(fields: [communityId], references: [id])
+
+  comments     Comment[]
+  votes        Vote[]
+}
+
+model Comment {
+  id         String    @id @default(cuid())
+  text       String
+  createdAt  DateTime  @default(now())
+
+  authorId   String
+  author     User      @relation(fields: [authorId], references: [id])
+
+  postId     String
+  post       Post      @relation(fields: [postId], references: [id])
+}
+
+model Vote {
+  id         String   @id @default(cuid())
+  type       VoteType
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+
+  postId     String
+  post       Post     @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+np
+enum VoteType {
+  UP
+  DOWN
+}
+
