@@ -21,7 +21,8 @@ export async function DELETE(req: Request) {
       },
     });
 
-    const postIds = posts.map((post) => post.id);
+   const postIds =
+  posts.map((post: { id: string }) => post.id);
 
     await prisma.$transaction([
       prisma.comment.deleteMany({
