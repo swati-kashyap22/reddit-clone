@@ -75,7 +75,6 @@ model Vote {
 
   @@unique([userId, postId])
 }
-np
 enum VoteType {
   UP
   DOWN
